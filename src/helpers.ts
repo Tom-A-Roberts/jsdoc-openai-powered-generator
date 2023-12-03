@@ -75,9 +75,29 @@ export const cleanAIResponse = (_response: string): string => {
     response = response.slice(15).trim();
   }
 
-  // if response doesn't end in a newline, add one
-  if (response[response.length - 1] !== "\n") {
-    response += "\n";
-  }
   return response;
+}
+
+/**
+* Prepends the indentation of the first non-empty line from a code block to each line of a provided comment string.
+*
+* @param codeBlock The string representing the block of code.
+* @param commentStr The string representing the comment to be indented.
+* @returns The comment string with each line indented to match the code block's first non-empty line indentation.
+*/
+export const indentCommentToCode = (codeBlock: string, commentStr: string): string => {
+  // Find the indentation of the first non-empty line in the code block
+  const indentMatch = codeBlock.match(/^(?!\s*$)\s*/);
+  const indent = indentMatch ? indentMatch[0] : '';
+
+  // Split the comment string into lines
+  const commentLines = commentStr.split('\n');
+
+  // Prepend the same indentation to each line of the comment for consistency
+  let indentedComment = commentLines.map(line => `${indent}${line}`).join('\n');
+  // if indentedComment doesn't end in a newline, add one
+  if (indentedComment[indentedComment.length - 1] !== "\n") {
+    indentedComment += "\n";
+  }
+  return indentedComment;
 }

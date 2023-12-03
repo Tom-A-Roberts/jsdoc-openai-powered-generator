@@ -36,7 +36,7 @@ export async function getAIResponse(apiKey: string, input: string, prompt: strin
     {
       role: "system",
       content:
-        "You write JSdoc comments and standard comments for typescript code. You only respond with the text itself, no other text or information.",
+        "You are a typescript assistant. You are to write a single JSdoc or a single comment. You only respond with the text itself, no other text or information.",
     },
     {
       role: "user",

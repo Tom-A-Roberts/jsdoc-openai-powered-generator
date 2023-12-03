@@ -43,9 +43,9 @@
         },
         "jsdoc-openai-powered-generator.prompt": {
           "type": "string",
-          "default": "### [TASK]\nDocument the following code. Specifically, write a jsdoc if it is a function (or similarly suitable), but if it's just normal code, write a comment. Do not include the types when writing a jsdoc.\n\n### [CODE]\n{}\n\n### [JSDOC or COMMENT]",
+          "default": "### [TASK]\nDocument the following code. Specifically, write a jsdoc if it is a function (or similarly suitable), but if it's just normal code, write a single comment.\nExtra details:\nThe comment may be multi-line if necessary.\nDo not include the types when writing a jsdoc.\n\n### [CODE]\n{}\n\n### [JSDOC or COMMENT]",
           "description": "The prompt to use for generating JSDOCs. Use an empty object {} to signify the where your code should be inserted inside the prompt.",
-          "editPresentation":"multilineText"
+          "editPresentation": "multilineText"
         }
       }
     }

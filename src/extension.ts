@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { cleanAIResponse, findSelectedBlockFromSelection } from "./helpers";
+import { cleanAIResponse, findSelectedBlockFromSelection, indentCommentToCode } from "./helpers";
 import { getAIResponse, parsePromptAndInsertInput } from "./openai-connection";
 
 const safelyExtractStringSetting = (settingName: string, vscodeWindow: typeof vscode.window, vscodeWorkspace: typeof vscode.workspace) => {
@@ -100,20 +100,21 @@ export async function activate(context: vscode.ExtensionContext) {
                   return;
                 }
 
-                const text = result.choices[0].message.content;
+                const commentText = result.choices[0].message.content;
 
-                if (!text) {
+                if (!commentText) {
                   vscode.window.showInformationMessage(
-                    "Error generating JSDoc - no text returned. Check the console For more info."
+                    "Error generating JSDoc - no text returned from API. Check the console For more info."
                   );
-                  console.log(result);
+                  console.log("result:", result);
                   return;
                 }
 
-                const cleanedText = cleanAIResponse(text);
+                const cleanedText = cleanAIResponse(commentText);
+                const textAfterBeingIndentedCorrectly = indentCommentToCode(contents, cleanedText);
 
                 editor.edit((editBuilder) => {
-                  editBuilder.insert(new vscode.Position(startLineIndex, 0), cleanedText);
+                  editBuilder.insert(new vscode.Position(startLineIndex, 0), textAfterBeingIndentedCorrectly);
                 });
               }
 
