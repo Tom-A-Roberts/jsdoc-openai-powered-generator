@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "jsdoc-openai-powered-generator.generate",
-        "title": "Document with AI"
+        "title": "AI Auto Comment"
       }
     ],
     "menus": {
@@ -39,13 +39,23 @@
         "jsdoc-openai-powered-generator.model": {
           "type": "string",
           "default": "gpt-4-1106-preview",
-          "description": "The model to use for generating JSDOCs"
+          "description": "The model to use for your generation. See [OpenAI's Site](https://platform.openai.com/docs/models) for more options."
         },
         "jsdoc-openai-powered-generator.prompt": {
           "type": "string",
-          "default": "### [TASK]\nDocument the following code. Specifically, write a jsdoc if it is a function (or similarly suitable), but if it's just normal code, write a single comment.\nExtra details:\nThe comment may be multi-line if necessary.\nDo not include any types of params or the return type when writing a jsdoc.\nIf multiple functions are selected, you should write a jsdoc for the first one.\n\n### [CODE]\n{}\n\n### [JSDOC or COMMENT]",
-          "description": "The prompt to use for generating JSDOCs. Use an empty object {} to signify the where your code should be inserted inside the prompt.",
+          "default": "### [TASK]\nDocument the following code. Specifically, write a jsdoc if it is a function (or similarly suitable), but if it's just normal code, write a single comment.\nExtra details:\nThe comment may be multi-line if necessary.\nIf multiple functions are selected, you should write a jsdoc for the first one.\nIf we are in TypeScript, types in the JSDOC are unnecessary.\n\n### [CODE]\n{}\n\n### [JSDOC or COMMENT]",
+          "description": "The prompt given to the model. You must use empty curly braces {} to signify the where your code should be inserted inside the prompt.",
           "editPresentation": "multilineText"
+        },
+        "jsdoc-openai-powered-generator.maxTokens": {
+          "type": "number",
+          "default": 300,
+          "description": "The maximum number of tokens to generate. Increase this if you want to generate more text. Decrease this if you want to save more money."
+        },
+        "jsdoc-openai-powered-generator.allowSingleLineSelection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to allow single-line selections for generating docs. Usually it's best to give the AI more than one line but enabling this can be useful for small functions."
         }
       }
     }

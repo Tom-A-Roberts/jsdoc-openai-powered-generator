@@ -49,70 +49,70 @@ export const cleanAIResponse = (_response: string): string => {
   response = response.trim();
 
   // Trim away common prefixes that gpt likes to add
-  if(response.startsWith("```") && response.endsWith("```")) {
+  if (response.startsWith("```") && response.endsWith("```")) {
     response = response.slice(3, -3).trim();
   }
   const lowerCaseResponse = response.toLowerCase();
-  if(lowerCaseResponse.startsWith("jsdoc")) {
+  if (lowerCaseResponse.startsWith("jsdoc")) {
     response = response.slice(5).trim();
   }
-  if(lowerCaseResponse.startsWith("js")) {
+  if (lowerCaseResponse.startsWith("js")) {
     response = response.slice(2).trim();
   }
-  if(lowerCaseResponse.startsWith("ts")) {
+  if (lowerCaseResponse.startsWith("ts")) {
     response = response.slice(2).trim();
   }
-  if(lowerCaseResponse.startsWith("javascript")) {
+  if (lowerCaseResponse.startsWith("javascript")) {
     response = response.slice(10).trim();
   }
-  if(lowerCaseResponse.startsWith("typescript")) {
+  if (lowerCaseResponse.startsWith("typescript")) {
     response = response.slice(10).trim();
   }
-  if(lowerCaseResponse.startsWith("[code]")) {
+  if (lowerCaseResponse.startsWith("[code]")) {
     response = response.slice(6).trim();
   }
-  if(lowerCaseResponse.startsWith("[jsdoc]")) {
+  if (lowerCaseResponse.startsWith("[jsdoc]")) {
     response = response.slice(7).trim();
   }
-  if(lowerCaseResponse.startsWith("[comment]")) {
+  if (lowerCaseResponse.startsWith("[comment]")) {
     response = response.slice(9).trim();
   }
-  if(lowerCaseResponse.startsWith("[jsdoc/comment]")) {
+  if (lowerCaseResponse.startsWith("[jsdoc/comment]")) {
     response = response.slice(15).trim();
   }
 
   return response;
-}
+};
 
 // Add a space to the beginning of each line of a comment string where the line starts with a *
 const trimCommentLine = (line: string): string => {
-  if(line.trim().startsWith("*")) {
+  if (line.trim().startsWith("*")) {
     return ` ${line.trim()}`;
   }
   return line.trim();
-}
+};
 
 /**
-* Prepends the indentation of the first non-empty line from a code block to each line of a provided comment string.
-*
-* @param codeBlock The string representing the block of code.
-* @param commentStr The string representing the comment to be indented.
-* @returns The comment string with each line indented to match the code block's first non-empty line indentation.
-*/
+ * Prepends the indentation of the first non-empty line from a code block to each line of a provided comment string.
+ *
+ * @param codeBlock The string representing the block of code.
+ * @param commentStr The string representing the comment to be indented.
+ * @returns The comment string with each line indented to match the code block's first non-empty line indentation.
+ */
 export const indentCommentToCode = (codeBlock: string, commentStr: string): string => {
   // Find the indentation of the first non-empty line in the code block
   const indentMatch = codeBlock.match(/^(?!\s*$)\s*/);
-  const indent = indentMatch ? indentMatch[0] : '';
+  const indent = indentMatch ? indentMatch[0] : "";
 
   // Split the comment string into lines
-  const commentLines = commentStr.split('\n');
+  const commentLines = commentStr.split("\n");
 
   // Prepend the same indentation to each line of the comment for consistency
-  let indentedComment = commentLines.map(line => `${indent}${trimCommentLine(line)}`).join('\n');;
+  let indentedComment = commentLines.map((line) => `${indent}${trimCommentLine(line)}`).join("\n");
 
   // if indentedComment doesn't end in a newline, add one
   if (indentedComment[indentedComment.length - 1] !== "\n") {
     indentedComment += "\n";
   }
   return indentedComment;
-}
+};

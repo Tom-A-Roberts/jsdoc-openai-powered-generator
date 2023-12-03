@@ -4,8 +4,13 @@ import * as vscode from "vscode";
 import { cleanAIResponse, findSelectedBlockFromSelection, indentCommentToCode } from "./helpers";
 import { getAIResponse, parsePromptAndInsertInput } from "./openai-connection";
 
-const safelyExtractStringSetting = (settingName: string, vscodeWindow: typeof vscode.window, vscodeWorkspace: typeof vscode.workspace) => {
+const safelyExtractStringSetting = (
+  settingName: string,
+  vscodeWindow: typeof vscode.window,
+  vscodeWorkspace: typeof vscode.workspace
+) => {
   const setting = vscodeWorkspace.getConfiguration().get(settingName);
+
   if (!setting) {
     vscodeWindow.showInformationMessage(`${settingName} not found - please set it in the settings.`);
     return null;
@@ -16,8 +21,37 @@ const safelyExtractStringSetting = (settingName: string, vscodeWindow: typeof vs
   }
 
   return setting;
-}
+};
 
+const safelyExtractBooleanSetting = (
+  settingName: string,
+  vscodeWindow: typeof vscode.window,
+  vscodeWorkspace: typeof vscode.workspace
+) => {
+  const setting = vscodeWorkspace.getConfiguration().get(settingName);
+
+  if (typeof setting !== "boolean") {
+    vscodeWindow.showInformationMessage(`${settingName} is not a boolean! Something has gone wrong.`);
+    return null;
+  }
+
+  return setting;
+};
+
+const safelyExtractNumericSetting = (
+  settingName: string,
+  vscodeWindow: typeof vscode.window,
+  vscodeWorkspace: typeof vscode.workspace
+) => {
+  const setting = vscodeWorkspace.getConfiguration().get(settingName);
+
+  if (typeof setting !== "number") {
+    vscodeWindow.showInformationMessage(`${settingName} is not a number! Something has gone wrong.`);
+    return null;
+  }
+
+  return setting;
+};
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -46,17 +80,53 @@ export async function activate(context: vscode.ExtensionContext) {
       } else {
         const { contents, startLineIndex, endLineIndex } = selectedBlock;
 
-
-        const apiKey = safelyExtractStringSetting("jsdoc-openai-powered-generator.apiKey", vscode.window, vscode.workspace);
+        const apiKey = safelyExtractStringSetting(
+          "jsdoc-openai-powered-generator.apiKey",
+          vscode.window,
+          vscode.workspace
+        );
         if (!apiKey) {
           return;
         }
-        const promptFromConfig = safelyExtractStringSetting("jsdoc-openai-powered-generator.prompt", vscode.window, vscode.workspace);
-        if(!promptFromConfig) {
+        const promptFromConfig = safelyExtractStringSetting(
+          "jsdoc-openai-powered-generator.prompt",
+          vscode.window,
+          vscode.workspace
+        );
+        if (!promptFromConfig) {
           return;
         }
-        const modelFromConfig = safelyExtractStringSetting("jsdoc-openai-powered-generator.model", vscode.window, vscode.workspace);
-        if(!modelFromConfig) {
+        const modelFromConfig = safelyExtractStringSetting(
+          "jsdoc-openai-powered-generator.model",
+          vscode.window,
+          vscode.workspace
+        );
+        if (!modelFromConfig) {
+          return;
+        }
+
+        const allowSingleLineSelection = safelyExtractBooleanSetting(
+          "jsdoc-openai-powered-generator.allowSingleLineSelection",
+          vscode.window,
+          vscode.workspace
+        );
+        if (allowSingleLineSelection === null) {
+          return;
+        }
+
+        const maxTokens = safelyExtractNumericSetting(
+          "jsdoc-openai-powered-generator.maxTokens",
+          vscode.window,
+          vscode.workspace
+        );
+        if (maxTokens === null) {
+          return;
+        }
+
+        if (!allowSingleLineSelection && startLineIndex === endLineIndex) {
+          vscode.window.showInformationMessage(
+            "Only single line selections are allowed (as per settings) - please select more than one line"
+          );
           return;
         }
 
@@ -70,22 +140,19 @@ export async function activate(context: vscode.ExtensionContext) {
             async (progress, token) => {
               progress.report({ increment: 20 });
 
-              const {prompt, error: promptParseError} = parsePromptAndInsertInput(
-                promptFromConfig,
-                contents
-              );
-              if(promptParseError) {
+              const { prompt, error: promptParseError } = parsePromptAndInsertInput(promptFromConfig, contents);
+              if (promptParseError) {
                 vscode.window.showInformationMessage(`Error parsing prompt: ${promptParseError}`);
                 console.log(promptParseError);
                 return;
               }
-              if(!prompt) {
+              if (!prompt) {
                 vscode.window.showInformationMessage(`Error parsing prompt: no prompt returned.`);
                 console.log(prompt);
                 return;
               }
 
-              const { result, error } = await getAIResponse(apiKey, contents, prompt, modelFromConfig);
+              const { result, error } = await getAIResponse(apiKey, contents, prompt, modelFromConfig, maxTokens);
 
               if (error) {
                 vscode.window.showInformationMessage("Error generating JSDoc - please check the console.");

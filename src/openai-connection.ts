@@ -29,7 +29,7 @@ export const parsePromptAndInsertInput = (prompt: string, input: string): ParseR
   };
 };
 
-export async function getAIResponse(apiKey: string, input: string, prompt: string, model: string) {
+export async function getAIResponse(apiKey: string, input: string, prompt: string, model: string, maxTokens: number) {
   const openai = new OpenAI({ apiKey });
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -50,6 +50,7 @@ export async function getAIResponse(apiKey: string, input: string, prompt: strin
     const res = await openai.chat.completions.create({
       messages,
       model: model,
+      max_tokens: maxTokens,
     });
     console.log(res);
 
