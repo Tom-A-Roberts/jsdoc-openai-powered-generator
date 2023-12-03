@@ -56,6 +56,12 @@ export const cleanAIResponse = (_response: string): string => {
   if(lowerCaseResponse.startsWith("jsdoc")) {
     response = response.slice(5).trim();
   }
+  if(lowerCaseResponse.startsWith("js")) {
+    response = response.slice(2).trim();
+  }
+  if(lowerCaseResponse.startsWith("ts")) {
+    response = response.slice(2).trim();
+  }
   if(lowerCaseResponse.startsWith("javascript")) {
     response = response.slice(10).trim();
   }
@@ -78,6 +84,14 @@ export const cleanAIResponse = (_response: string): string => {
   return response;
 }
 
+// Add a space to the beginning of each line of a comment string where the line starts with a *
+const trimCommentLine = (line: string): string => {
+  if(line.trim().startsWith("*")) {
+    return ` ${line.trim()}`;
+  }
+  return line.trim();
+}
+
 /**
 * Prepends the indentation of the first non-empty line from a code block to each line of a provided comment string.
 *
@@ -94,7 +108,8 @@ export const indentCommentToCode = (codeBlock: string, commentStr: string): stri
   const commentLines = commentStr.split('\n');
 
   // Prepend the same indentation to each line of the comment for consistency
-  let indentedComment = commentLines.map(line => `${indent}${line}`).join('\n');
+  let indentedComment = commentLines.map(line => `${indent}${trimCommentLine(line)}`).join('\n');;
+
   // if indentedComment doesn't end in a newline, add one
   if (indentedComment[indentedComment.length - 1] !== "\n") {
     indentedComment += "\n";
