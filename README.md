@@ -5,3 +5,8 @@ This vs-code extension generate JSDOC comments using your OpenAI key, and a spec
 
 It pre-prompts the model with the entire function and tells it to make a JSDOC.
 
+# Installation of Project
+
+Ensure you have node and git installed. Then:
+1. Clone the repo
+2. Run `npm install`

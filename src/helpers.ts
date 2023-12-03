@@ -44,3 +44,10 @@ export const findSelectedBlockFromSelection = (
   return { contents: blockSelected.join("\n"), startLineIndex, endLineIndex };
 };
 
+export const cleanAIResponse = (response: string): string => {
+  // if response doesn't end in a newline, add one
+  if (response[response.length - 1] !== "\n") {
+    response += "\n";
+  }
+  return response;
+}

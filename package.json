@@ -26,6 +26,22 @@
           "group": "0_modification2"
         }
       ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "JSDOC OpenAI Powered Generator",
+      "properties": {
+        "jsdoc-openai-powered-generator.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your OpenAI API key"
+        },
+        "jsdoc-openai-powered-generator.model": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "description": "The model to use for generating JSDOCs"
+        }
+      }
     }
   },
   "scripts": {

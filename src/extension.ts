@@ -1,11 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { findSelectedBlockFromSelection } from "./helpers";
+import { cleanAIResponse, findSelectedBlockFromSelection } from "./helpers";
+import { testAI } from "./openai-connection";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "jsdoc-openai-powered-generator" is now active!');
@@ -13,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand("jsdoc-openai-powered-generator.generate", () => {
+  let disposable = vscode.commands.registerCommand("jsdoc-openai-powered-generator.generate", async () => {
     // Get the active text editor
     const editor = vscode.window.activeTextEditor;
 
@@ -25,26 +26,72 @@ export function activate(context: vscode.ExtensionContext) {
 
       const selectedBlock = findSelectedBlockFromSelection(entireFile, selection);
 
-	  if(!selectedBlock) {
-		vscode.window.showInformationMessage("Could not find code - selection appears to be empty.");
-	  }else{
-		const { contents, startLineIndex, endLineIndex } = selectedBlock;
+      if (!selectedBlock) {
+        vscode.window.showInformationMessage("Could not find code - selection appears to be empty.");
+      } else {
+        const { contents, startLineIndex, endLineIndex } = selectedBlock;
 
+        console.log(`###${selectedBlock}###`);
 
-		console.log(`###${selectedBlock}###`);
-		
-		// const openai = require('openai-api');
-		const dummyText = "//Test Comment\n";
+        const apiKey = vscode.workspace.getConfiguration().get("jsdoc-openai-powered-generator.apiKey");
 
-		editor.edit(editBuilder => {
-			editBuilder.insert(new vscode.Position(startLineIndex, 0), dummyText);
-		});
+        if (!apiKey) {
+          vscode.window.showInformationMessage("API Key not found - please set it in the settings.");
+          return;
+        }
+        if (typeof apiKey !== "string") {
+          vscode.window.showInformationMessage("API Key is not a string - please set it in the settings.");
+          return;
+        }
 
-		vscode.window.showInformationMessage("Done!");
-	  }
-    }else{
-		vscode.window.showInformationMessage("Editor not found - please open a file.");
-	}
+        vscode.window
+          .withProgress(
+            {
+              location: vscode.ProgressLocation.Notification,
+              title: "Generating JSDoc",
+              cancellable: false,
+            },
+            async (progress, token) => {
+              progress.report({ increment: 20 });
+              const { result, error } = await testAI(apiKey, contents);
+
+              if (error) {
+                vscode.window.showInformationMessage("Error generating JSDoc - please check the console.");
+                console.log(error);
+                return;
+              } else {
+                if (!result) {
+                  vscode.window.showInformationMessage("Error generating JSDoc - no result returned. Check the console For more info.");
+				  console.log(result);
+                  return;
+                }
+
+                const text = result.choices[0].message.content;
+
+				if(!text){
+					vscode.window.showInformationMessage("Error generating JSDoc - no text returned. Check the console For more info.");
+					console.log(result);
+					return;
+				}
+
+				const cleanedText = cleanAIResponse(text);
+
+				editor.edit(editBuilder => {
+					editBuilder.insert(new vscode.Position(startLineIndex, 0), cleanedText);
+				});
+
+              }
+
+              progress.report({ increment: 100 });
+            }
+          )
+          .then(() => {
+            console.log("JSDoc generated!");
+          });
+      }
+    } else {
+      vscode.window.showInformationMessage("Editor not found - please open a file.");
+    }
   });
 
   context.subscriptions.push(disposable);
