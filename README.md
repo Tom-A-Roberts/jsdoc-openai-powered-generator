@@ -21,8 +21,8 @@ The model will be prompted with your selection, and will generate a comment base
 
 ### Settings
 You can access these by going to your VSCode settings, going to Extensions, and finding this one. If you're a JSON fan, here's the setting keys:
-- **jsdoc-openai-powered-generator.apiKey** - Your OpenAI API key.
-- **jsdoc-openai-powered-generator.prompt** - The prompt given to the model. You must use empty curly braces {} to signify the where your code should be inserted inside the prompt.
-- **jsdoc-openai-powered-generator.model** - The model to use for your generation. See [OpenAI's Site](https://platform.openai.com/docs/models) for more options.
-- **jsdoc-openai-powered-generator.maxTokens** - The maximum number of tokens to generate. Increase this if you want to generate more text. Decrease this if you want to save more money.
-- **jsdoc-openai-powered-generator.allowSingleLineSelection** - Whether to allow single-line selections for generating docs. Usually it's best to give the AI more than one line but enabling this can be useful for small functions.
+- **ai-auto-comment.apiKey** - Your OpenAI API key.
+- **ai-auto-comment.prompt** - The prompt given to the model. You must use empty curly braces {} to signify the where your code should be inserted inside the prompt.
+- **ai-auto-comment.model** - The model to use for your generation. See [OpenAI's Site](https://platform.openai.com/docs/models) for more options.
+- **ai-auto-comment.maxTokens** - The maximum number of tokens to generate. Increase this if you want to generate more text. Decrease this if you want to save more money.
+- **ai-auto-comment.allowSingleLineSelection** - Whether to allow single-line selections for generating docs. Usually it's best to give the AI more than one line but enabling this can be useful for small functions.

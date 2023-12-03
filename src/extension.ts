@@ -58,12 +58,12 @@ const safelyExtractNumericSetting = (
 export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "jsdoc-openai-powered-generator" is now active!');
+  console.log('Congratulations, your extension "ai-auto-comment" is now active!');
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand("jsdoc-openai-powered-generator.generate", async () => {
+  let disposable = vscode.commands.registerCommand("ai-auto-comment.generate", async () => {
     // Get the active text editor
     const editor = vscode.window.activeTextEditor;
 
@@ -81,15 +81,16 @@ export async function activate(context: vscode.ExtensionContext) {
         const { contents, startLineIndex, endLineIndex } = selectedBlock;
 
         const apiKey = safelyExtractStringSetting(
-          "jsdoc-openai-powered-generator.apiKey",
+          "ai-auto-comment.apiKey",
           vscode.window,
           vscode.workspace
         );
         if (!apiKey) {
+          vscode.commands.executeCommand("workbench.action.openSettings", "ai-auto-comment.apiKey");
           return;
         }
         const promptFromConfig = safelyExtractStringSetting(
-          "jsdoc-openai-powered-generator.prompt",
+          "ai-auto-comment.prompt",
           vscode.window,
           vscode.workspace
         );
@@ -97,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
         const modelFromConfig = safelyExtractStringSetting(
-          "jsdoc-openai-powered-generator.model",
+          "ai-auto-comment.model",
           vscode.window,
           vscode.workspace
         );
@@ -106,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         const allowSingleLineSelection = safelyExtractBooleanSetting(
-          "jsdoc-openai-powered-generator.allowSingleLineSelection",
+          "ai-auto-comment.allowSingleLineSelection",
           vscode.window,
           vscode.workspace
         );
@@ -115,7 +116,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         const maxTokens = safelyExtractNumericSetting(
-          "jsdoc-openai-powered-generator.maxTokens",
+          "ai-auto-comment.maxTokens",
           vscode.window,
           vscode.workspace
         );

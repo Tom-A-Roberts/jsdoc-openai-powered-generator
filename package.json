@@ -1,6 +1,6 @@
 {
-  "name": "jsdoc-openai-powered-generator",
-  "displayName": "JSDOC OpenAI Powered Generator",
+  "name": "ai-auto-comment",
+  "displayName": "AI Auto Comment: An OpenAI-Powered Documentation Extension",
   "description": "Generates JSDOCs for typescript functions, using your OpenAI API key and a specified model",
   "version": "0.0.1",
   "engines": {
@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "jsdoc-openai-powered-generator.generate",
+        "command": "ai-auto-comment.generate",
         "title": "AI Auto Comment"
       }
     ],
@@ -22,37 +22,37 @@
       "editor/context": [
         {
           "when": "editorLangId == javascript || editorLangId == javascriptreact || editorLangId == typescript || editorLangId == typescriptreact",
-          "command": "jsdoc-openai-powered-generator.generate",
+          "command": "ai-auto-comment.generate",
           "group": "0_modification2"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "JSDOC OpenAI Powered Generator",
+      "title": "AI Auto Comment",
       "properties": {
-        "jsdoc-openai-powered-generator.apiKey": {
+        "ai-auto-comment.apiKey": {
           "type": "string",
           "default": "",
           "description": "Your OpenAI API key"
         },
-        "jsdoc-openai-powered-generator.model": {
+        "ai-auto-comment.model": {
           "type": "string",
           "default": "gpt-4-1106-preview",
           "description": "The model to use for your generation. See [OpenAI's Site](https://platform.openai.com/docs/models) for more options."
         },
-        "jsdoc-openai-powered-generator.prompt": {
+        "ai-auto-comment.prompt": {
           "type": "string",
           "default": "### [TASK]\nDocument the following code. Specifically, write a jsdoc if it is a function (or similarly suitable), but if it's just normal code, write a single comment.\nExtra details:\nThe comment may be multi-line if necessary.\nIf multiple functions are selected, you should write a jsdoc for the first one.\nIf we are in TypeScript, types in the JSDOC are unnecessary.\n\n### [CODE]\n{}\n\n### [JSDOC or COMMENT]",
           "description": "The prompt given to the model. You must use empty curly braces {} to signify the where your code should be inserted inside the prompt.",
           "editPresentation": "multilineText"
         },
-        "jsdoc-openai-powered-generator.maxTokens": {
+        "ai-auto-comment.maxTokens": {
           "type": "number",
           "default": 300,
           "description": "The maximum number of tokens to generate. Increase this if you want to generate more text. Decrease this if you want to save more money."
         },
-        "jsdoc-openai-powered-generator.allowSingleLineSelection": {
+        "ai-auto-comment.allowSingleLineSelection": {
           "type": "boolean",
           "default": false,
           "description": "Whether to allow single-line selections for generating docs. Usually it's best to give the AI more than one line but enabling this can be useful for small functions."
