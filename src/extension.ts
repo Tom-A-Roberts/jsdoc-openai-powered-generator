@@ -2,7 +2,22 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { cleanAIResponse, findSelectedBlockFromSelection } from "./helpers";
-import { testAI } from "./openai-connection";
+import { getAIResponse, parsePromptAndInsertInput } from "./openai-connection";
+
+const safelyExtractStringSetting = (settingName: string, vscodeWindow: typeof vscode.window, vscodeWorkspace: typeof vscode.workspace) => {
+  const setting = vscodeWorkspace.getConfiguration().get(settingName);
+  if (!setting) {
+    vscodeWindow.showInformationMessage(`${settingName} not found - please set it in the settings.`);
+    return null;
+  }
+  if (typeof setting !== "string") {
+    vscodeWindow.showInformationMessage(`${settingName} is not a string - please set it in the settings.`);
+    return null;
+  }
+
+  return setting;
+}
+
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -31,16 +46,17 @@ export async function activate(context: vscode.ExtensionContext) {
       } else {
         const { contents, startLineIndex, endLineIndex } = selectedBlock;
 
-        console.log(`###${selectedBlock}###`);
 
-        const apiKey = vscode.workspace.getConfiguration().get("jsdoc-openai-powered-generator.apiKey");
-
+        const apiKey = safelyExtractStringSetting("jsdoc-openai-powered-generator.apiKey", vscode.window, vscode.workspace);
         if (!apiKey) {
-          vscode.window.showInformationMessage("API Key not found - please set it in the settings.");
           return;
         }
-        if (typeof apiKey !== "string") {
-          vscode.window.showInformationMessage("API Key is not a string - please set it in the settings.");
+        const promptFromConfig = safelyExtractStringSetting("jsdoc-openai-powered-generator.prompt", vscode.window, vscode.workspace);
+        if(!promptFromConfig) {
+          return;
+        }
+        const modelFromConfig = safelyExtractStringSetting("jsdoc-openai-powered-generator.model", vscode.window, vscode.workspace);
+        if(!modelFromConfig) {
           return;
         }
 
@@ -53,7 +69,23 @@ export async function activate(context: vscode.ExtensionContext) {
             },
             async (progress, token) => {
               progress.report({ increment: 20 });
-              const { result, error } = await testAI(apiKey, contents);
+
+              const {prompt, error: promptParseError} = parsePromptAndInsertInput(
+                promptFromConfig,
+                contents
+              );
+              if(promptParseError) {
+                vscode.window.showInformationMessage(`Error parsing prompt: ${promptParseError}`);
+                console.log(promptParseError);
+                return;
+              }
+              if(!prompt) {
+                vscode.window.showInformationMessage(`Error parsing prompt: no prompt returned.`);
+                console.log(prompt);
+                return;
+              }
+
+              const { result, error } = await getAIResponse(apiKey, contents, prompt, modelFromConfig);
 
               if (error) {
                 vscode.window.showInformationMessage("Error generating JSDoc - please check the console.");
@@ -61,25 +93,28 @@ export async function activate(context: vscode.ExtensionContext) {
                 return;
               } else {
                 if (!result) {
-                  vscode.window.showInformationMessage("Error generating JSDoc - no result returned. Check the console For more info.");
-				  console.log(result);
+                  vscode.window.showInformationMessage(
+                    "Error generating JSDoc - no result returned. Check the console For more info."
+                  );
+                  console.log(result);
                   return;
                 }
 
                 const text = result.choices[0].message.content;
 
-				if(!text){
-					vscode.window.showInformationMessage("Error generating JSDoc - no text returned. Check the console For more info.");
-					console.log(result);
-					return;
-				}
+                if (!text) {
+                  vscode.window.showInformationMessage(
+                    "Error generating JSDoc - no text returned. Check the console For more info."
+                  );
+                  console.log(result);
+                  return;
+                }
 
-				const cleanedText = cleanAIResponse(text);
+                const cleanedText = cleanAIResponse(text);
 
-				editor.edit(editBuilder => {
-					editBuilder.insert(new vscode.Position(startLineIndex, 0), cleanedText);
-				});
-
+                editor.edit((editBuilder) => {
+                  editBuilder.insert(new vscode.Position(startLineIndex, 0), cleanedText);
+                });
               }
 
               progress.report({ increment: 100 });
