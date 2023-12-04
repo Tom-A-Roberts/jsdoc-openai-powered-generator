@@ -2,13 +2,17 @@
   "name": "ai-auto-comment",
   "displayName": "AI Auto Comment: An OpenAI-Powered Documentation Extension",
   "description": "Generates JSDOCs for typescript functions, using your OpenAI API key and a specified model",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.84.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tom-A-Roberts/jsdoc-openai-powered-generator.git"
+  },
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
