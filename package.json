@@ -3,6 +3,8 @@
   "displayName": "AI Auto Comment: An OpenAI-Powered Documentation Extension",
   "description": "Generates JSDOCs for typescript functions, using your OpenAI API key and a specified model",
   "version": "1.0.0",
+  "license": "MIT",
+  "icon": "./icon.png",
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -65,12 +67,16 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
@@ -80,6 +86,7 @@
     "@typescript-eslint/parser": "^6.13.1",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
+    "esbuild": "^0.19.8",
     "eslint": "^8.54.0",
     "typescript": "^5.3.2"
   },
