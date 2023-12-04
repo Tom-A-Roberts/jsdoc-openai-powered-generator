@@ -21,7 +21,7 @@ Select some code and right-click, choose the option "AI Auto Comment" to generat
 - It will auto-indent the comment/JSDoc so that it makes formatters like Prettier happy.
 
 ### Settings
-You can access these by going to your VSCode settings, going to Extensions, and finding this one. If you're a JSON fan, here's the setting keys:
+You can access these by going to your VSCode settings, going to Extensions, and finding "AI Auto Comment". If you're a JSON fan, here's the setting keys:
 - **ai-auto-comment.apiKey** - Your OpenAI API key.
 - **ai-auto-comment.prompt** - The prompt given to the model. You must use empty curly braces {} to signify the where your code should be inserted inside the prompt.
 - **ai-auto-comment.model** - The model to use for your generation. See [OpenAI's Site](https://platform.openai.com/docs/models) for more options.
