@@ -4,6 +4,7 @@
   "description": "Generates JSDOCs for typescript functions, using your OpenAI API key and a specified model",
   "version": "1.0.0",
   "license": "MIT",
+  "publisher": "TomRoberts",
   "icon": "./icon.png",
   "engines": {
     "vscode": "^1.84.0"
