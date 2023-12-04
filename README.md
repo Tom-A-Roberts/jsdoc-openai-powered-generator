@@ -4,6 +4,8 @@ Generates a JSDoc (or a regular comment) using your OpenAI key for any selected 
 
 This is a VSCode extension.
 
+![](/demo.gif)
+
 ### Setup
 Provide your OpenAI key in the settings and double-check you're cool with the model being "gpt-4-1106-preview" (it's the default). See [OpenAI's Site](https://platform.openai.com/docs/models) for other values.
 
